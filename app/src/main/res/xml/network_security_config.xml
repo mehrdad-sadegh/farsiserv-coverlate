@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  کل ارتباطات برنامه رمزنگاری‌شده (HTTPS) است و ارتباط رمزنشده (HTTP) در هیچ‌کجا مجاز نیست.
+  سرور لایسنس/تبلیغات روی HTTPS (farsisaz.softserv.ir) پشت Cloudflare کار می‌کند و ترجمه (Bing/Google) هم HTTPS است.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+</network-security-config>

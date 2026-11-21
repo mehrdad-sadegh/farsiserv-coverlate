@@ -1,0 +1,25 @@
+# Signing key — NEVER commit (lives in GitHub Secrets)
+*.jks
+*.keystore
+*.b64
+
+# Gradle / build
+.gradle/
+build/
+/app/build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs (published via Releases, not committed)
+*.apk
+*.aab

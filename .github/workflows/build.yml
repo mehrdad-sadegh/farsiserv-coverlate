@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,14 +31,31 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: gradle :app:assembleIrRelease :app:assembleGlobalRelease --no-daemon --stacktrace
 
-      - name: Upload FarsiServ (Persian)
+      - name: Collect APKs
+        run: |
+          cp "$(ls app/build/outputs/apk/ir/release/*.apk | head -1)" farsiserv.apk
+          cp "$(ls app/build/outputs/apk/global/release/*.apk | head -1)" coverlate.apk
+
+      - name: Upload FarsiServ (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: FarsiServ
-          path: app/build/outputs/apk/ir/release/*.apk
+          path: farsiserv.apk
 
-      - name: Upload Coverlate (Global)
+      - name: Upload Coverlate (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: Coverlate
-          path: app/build/outputs/apk/global/release/*.apk
+          path: coverlate.apk
+
+      - name: Publish to release repos
+        if: env.RELEASE_TOKEN != ''
+        env:
+          GH_TOKEN: ${{ env.RELEASE_TOKEN }}
+        run: |
+          VER=$(grep -m1 versionName app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
+          TAG="v$VER"
+          gh release create "$TAG" --repo mehrdad-sadegh/farsiserv --title "FarsiServ $TAG" --notes "نسخهٔ $VER" farsiserv.apk \
+            || gh release upload "$TAG" --repo mehrdad-sadegh/farsiserv --clobber farsiserv.apk
+          gh release create "$TAG" --repo mehrdad-sadegh/coverlate --title "Coverlate $TAG" --notes "Version $VER" coverlate.apk \
+            || gh release upload "$TAG" --repo mehrdad-sadegh/coverlate --clobber coverlate.apk
